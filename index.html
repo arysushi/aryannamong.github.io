@@ -80,6 +80,29 @@
   .now-item h3{font-family:'Fraunces',serif;font-weight:500;font-size:1.1rem;color:var(--forest);margin:.3rem 0 .4rem}
   .now-item p{font-size:.9rem;opacity:.85}
 
+  /* contact form */
+  .contact-form{
+    max-width:34rem;margin-top:2.5rem;
+    display:flex;flex-direction:column;gap:1rem;
+  }
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  @media(max-width:560px){.form-row{grid-template-columns:1fr}}
+  .contact-form input,
+  .contact-form textarea{
+    width:100%;padding:.85rem 1.1rem;
+    font-family:'Archivo',sans-serif;font-size:.95rem;
+    color:var(--ink);background:var(--paper-2);
+    border:1px solid var(--line);border-radius:14px;
+    transition:border-color .2s,background .2s;
+  }
+  .contact-form textarea{min-height:140px;resize:vertical}
+  .contact-form input::placeholder,
+  .contact-form textarea::placeholder{color:var(--moss);opacity:.8}
+  .contact-form input:focus,
+  .contact-form textarea:focus{outline:none;border-color:var(--leaf)}
+  .form-status{font-size:.85rem;color:var(--leaf);min-height:1.2em}
+  .contact-form .btn{align-self:flex-start;cursor:pointer;font-family:'Archivo',sans-serif}
+
   /* back to top */
   .to-top{
     position:fixed;bottom:1.6rem;right:1.6rem;z-index:40;
@@ -247,12 +270,15 @@
 </nav>
 
 <header id="top">
-  <p class="mono hero-eyebrow">Software Engineer · CS + Linguistics @ UIUC</p>
+  <span class="avail"><span class="avail-dot"></span>Open to Summer 2027 SWE internships</span>
+  <p class="mono hero-eyebrow">Software Engineer · CS + Linguistics @ UIUC · May 2028</p>
   <h1>Building software<br>that <em>listens.</em></h1>
   <p class="hero-sub">I'm Aryanna — a computer science and linguistics student working across middleware engineering, speech processing, and VR neurofeedback. I like systems that turn messy human signals into something useful.</p>
   <div class="hero-cta">
     <a class="btn solid" href="#experience">See my work</a>
     <a class="btn ghost" href="https://linkedin.com/in/aryannamong" target="_blank" rel="noopener">LinkedIn</a>
+    <!-- Upload your resume PDF next to this file and keep the name below -->
+    <a class="btn ghost" href="AryannaMong_Resume.pdf" download>Download resume ↓</a>
   </div>
   <div class="signal-wrap">
     <div class="signal-label"><span class="signal-dot"></span><span class="mono" id="signal-text">signal: idle — move your cursor</span></div>
@@ -410,6 +436,19 @@
 <footer id="contact">
   <p class="mono reveal">get in touch</p>
   <a class="foot-mail reveal" href="mailto:aryanna.mong@gmail.com">aryanna.mong@gmail.com</a>
+
+  <!-- TODO: replace YOUR_FORM_ID with your real Formspree form ID (formspree.io) -->
+  <form class="contact-form reveal" id="contact-form" action="https://formspree.io/f/mbdnjjpz" method="POST">
+    <div class="form-row">
+      <input type="text" name="name" placeholder="Your name" required autocomplete="name">
+      <input type="email" name="email" placeholder="Your email" required autocomplete="email">
+    </div>
+    <input type="text" name="subject" placeholder="Subject" required>
+    <textarea name="message" placeholder="Your message" required></textarea>
+    <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+    <button class="btn solid" type="submit">Send message</button>
+  </form>
+
   <div class="foot-meta">
     <span class="mono">Designed &amp; built by Aryanna Mong · © 2026</span>
     <a class="mono" href="https://linkedin.com/in/aryannamong" target="_blank" rel="noopener">LinkedIn ↗</a>
@@ -512,6 +551,34 @@
   btn.addEventListener('click', () => {
     root.dataset.theme = root.dataset.theme === 'dark' ? '' : 'dark';
     if(window.redrawSignal) window.redrawSignal();
+  });
+})();
+
+/* contact form (Formspree) */
+(function(){
+  const form = document.getElementById('contact-form');
+  const status = document.getElementById('form-status');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    status.textContent = 'Sending…';
+    try{
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: {'Accept': 'application/json'}
+      });
+      if(res.ok){
+        form.reset();
+        status.textContent = 'Message sent. I\'ll get back to you soon.';
+      } else {
+        status.textContent = 'Something went wrong. Email me directly instead.';
+      }
+    } catch {
+      status.textContent = 'Network error. Email me directly instead.';
+    }
+    btn.disabled = false;
   });
 })();
 
